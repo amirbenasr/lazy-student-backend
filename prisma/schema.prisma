@@ -10,11 +10,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  password String? 
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  role            Role?
+  name            String?
+  password        String?
+  createdProjects Project[] @relation("createdBy")
+  Project         Project[] @relation("joinedBy")
 }
 
+model Project {
+  id         Int        @id @default(autoincrement())
+  name       String
+  type       Type
+  technology Technology
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  deadline   DateTime
+  createdBy  User       @relation("createdBy", fields: [creatorId], references: [id])
+  creatorId  Int
+  joinedBy   User?      @relation("joinedBy", fields: [joinedId], references: [id])
+  joinedId   Int?
+  status     Status     @default(PENDING)
+}
+
+enum Role {
+  STUDENT
+  PROFESSOR
+}
+
+enum Type {
+  MOBILE
+  WEB
+  BACKEND
+  FULLSTACK
+}
+
+enum Technology {
+  FLUTTER
+  REACT
+  VUEJS
+  NEXTJS
+  NATIVE
+}
+
+enum Status {
+  PENDING
+  MATCHED
+  FINISHED
+}
