@@ -6,6 +6,7 @@
 //     next();
 //   }
 // };
+import jwt_decode from "jwt-decode";
 
 import { sign, verify } from "jsonwebtoken";
 
@@ -25,8 +26,11 @@ export const verifyToken = async (req: any, res: any, next: any) => {
     const verified = verify(accessToken, "secret-lounge");
 
     if (verified) {
-      console.log(accessToken);
+      var decodedToken: any;
+      decodedToken = jwt_decode(accessToken);
+      var user_email = decodedToken.user;
       req.authenticated = true;
+      res.locals.email = user_email;
       return next();
     } else {
       return res.status(404).json("the access token is malformed");
