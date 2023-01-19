@@ -12,14 +12,12 @@ export const createProject = async (data: any) => {
     console.log(error);
   }
 };
-export const getProjects = async (email: string) => {
+export const getProjects = async (id: number) => {
   try {
     var projects;
     projects = await db.project.findMany({
       where: {
-        createdBy: {
-          email,
-        },
+        creatorId: id,
       },
     });
     console.log(projects);
@@ -30,4 +28,30 @@ export const getProjects = async (email: string) => {
   }
 };
 
-export const joinProject = async (id: any) => {};
+export const getAllProjects = async () => {
+  var projects = [];
+
+  projects = await db.project.findMany();
+  return projects;
+};
+
+export const joinProject = async (projectId: number, userId: number) => {
+  let project;
+
+  project = await db.project.findFirst({ where: { id: projectId } });
+
+  if (project?.joinedId == null) {
+    project = db.project.update({
+      data: {
+        joinedId: userId,
+      },
+      where: {
+        id: projectId,
+      },
+    });
+  } else {
+    return null;
+  }
+
+  return project;
+};

@@ -17,8 +17,8 @@ userRouter.use(cookieParser());
 // GET: List of all Users
 userRouter.get("/", async (request: Request, response: Response) => {
   try {
-    const authors = await UserService.findUsers();
-    return response.status(200).json(authors);
+    const users = await UserService.findUsers();
+    return response.status(200).json(users);
   } catch (error: any) {
     return response.status(500).json(error.message);
   }
@@ -49,26 +49,27 @@ userRouter.post("/login", async (request: Request, response: Response) => {
   var data;
   var user;
   data = request.body;
+  console.log(data);
 
   if (!(data.email && data.password)) {
+    console.log(data);
+
     return response.status(401).json("wrong parameters");
   }
+
   user = await UserService.findUser(data.email);
 
+  if (!user) return response.status(401).json("user not found");
+
   const dbPassword = user?.password;
-  console.log(dbPassword);
-  console.log(data.password);
+
   var matchy = await bcrypt.compare(data.password, dbPassword!);
 
   if (user && matchy) {
     //generating token and save it in cookie
+
     generateToken(user).then((token) => {
-      response
-        .cookie("lazy-cookie", token, {
-          maxAge: 60 * 60 * 30 * 24,
-        })
-        .status(200)
-        .json("logged in successfully");
+      response.status(200).json({ success: true, token });
     });
   } else {
     response.status(401).json("user not found");

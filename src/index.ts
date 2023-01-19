@@ -5,6 +5,7 @@ import cors from "cors";
 import { userRouter } from "./user/user.router";
 import { projectRouter } from "./project/project.router";
 import cookieParser from "cookie-parser";
+import { profileRouter } from "./profile/profile.router";
 
 dotenv.config();
 
@@ -20,7 +21,8 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use("/users", userRouter);
-app.use("/project", projectRouter);
+app.use("/projects", projectRouter);
+app.use("/profile", profileRouter);
 
 app.listen(PORT, async () => {
   console.log(`Listening on port ${PORT} `);
