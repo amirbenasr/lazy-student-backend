@@ -3,12 +3,15 @@ import express from "express";
 import * as UserService from "./user.service";
 import type { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
-
+import * as PS from "../profile/profile.service";
 import * as bcrypt from "bcrypt";
 
 import { generateToken, verifyToken } from "../middlewares";
 
 import cookieParser from "cookie-parser";
+import { updateProfile } from "../profile/profile.service";
+import { Profile } from "../profile.type";
+import { randomUUID } from "crypto";
 
 export const userRouter = express.Router();
 
@@ -35,9 +38,19 @@ userRouter.post("/create", async (request: Request, response: Response) => {
     password = await bcrypt.hash(user.password, 10);
     //assign it to user
     user.password = password;
+    user.name = "user" + randomUUID();
 
     var created = await UserService.createUser(user);
-    console.log(created);
+    const profile: Profile = {
+      bio: "lazy student..",
+      fname: "happy",
+      lname: "joe",
+      userId: created.id,
+      avatar: "monkey",
+      country: "random",
+      dob: new Date(),
+    };
+    var profileCreated = await PS.updateProfile(profile);
     response.status(200).json(created);
   } catch (error) {
     response.status(401).json({ error: error });
@@ -51,15 +64,13 @@ userRouter.post("/login", async (request: Request, response: Response) => {
   data = request.body;
   console.log(data);
 
-  if (!(data.email && data.password)) {
-    console.log(data);
-
-    return response.status(401).json("wrong parameters");
-  }
-
   user = await UserService.findUser(data.email);
 
-  if (!user) return response.status(401).json("user not found");
+  if (!(data.email && data.password) || !user) {
+    return response
+      .status(401)
+      .json({ success: false, message: "verify your credentials" });
+  }
 
   const dbPassword = user?.password;
 
@@ -72,7 +83,9 @@ userRouter.post("/login", async (request: Request, response: Response) => {
       response.status(200).json({ success: true, token });
     });
   } else {
-    response.status(401).json("user not found");
+    response
+      .status(401)
+      .json({ success: false, message: "verify your credentials" });
   }
 });
 

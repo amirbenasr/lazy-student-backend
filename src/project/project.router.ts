@@ -30,8 +30,7 @@ projectRouter.post(
   "/create",
   verifyToken,
   async (request: Request, response: Response) => {
-    //we can only access this api
-    //if the user is student and authenticated
+    console.log(request.body);
 
     try {
       var data = request.body;

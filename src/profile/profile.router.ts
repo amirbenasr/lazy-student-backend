@@ -5,14 +5,16 @@ import { body, validationResult } from "express-validator";
 import { verifyToken } from "../middlewares";
 import * as ProfileService from "./profile.service";
 import jwtDecode from "jwt-decode";
-import { Profile } from "@prisma/client";
+import { Profile } from "../profile.type";
 
 export const profileRouter = express.Router();
 
 profileRouter.get("/", verifyToken, async (req: Request, res: Response) => {
   const id = res.locals.id;
+  console.log(id);
 
   const profile = await ProfileService.findProfileById(id);
+  console.log(profile);
 
   if (profile) {
     console.log(profile);
@@ -22,6 +24,7 @@ profileRouter.get("/", verifyToken, async (req: Request, res: Response) => {
     return res.json({ success: false, message: "user not found" });
   }
 });
+
 profileRouter.get("/public/:username", async (req: Request, res: Response) => {
   const username = req.params["username"];
   try {
@@ -42,10 +45,6 @@ profileRouter.put("/", verifyToken, async (req: Request, res: Response) => {
     lname,
     bio,
     userId,
-    id: 0,
-    dob: null,
-    country: null,
-    avatar: null,
   };
   if (!profile.dob) {
     profile.dob = null;

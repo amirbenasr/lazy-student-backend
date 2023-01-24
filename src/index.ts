@@ -24,6 +24,6 @@ app.use("/users", userRouter);
 app.use("/projects", projectRouter);
 app.use("/profile", profileRouter);
 
-app.listen(PORT, async () => {
+app.listen(PORT || 3000, async () => {
   console.log(`Listening on port ${PORT} `);
 });

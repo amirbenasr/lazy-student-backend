@@ -1,4 +1,4 @@
-import { Profile } from "@prisma/client";
+import { Profile } from "../profile.type";
 import { db } from "../utils/db.server";
 
 export const findProfileById = async (id: number) => {
@@ -18,8 +18,6 @@ export const findProfileById = async (id: number) => {
 };
 
 export const findProfileByUsername = async (username: string) => {
-  console.log(username);
-
   const user = await db.user.findFirstOrThrow({
     where: {
       name: username,
@@ -41,6 +39,8 @@ export const updateProfile = async (data: Profile) => {
     },
   });
   if (profile) {
+    console.log(data);
+
     const result = await db.profile.update({
       data,
       where: { userId: data.userId },
