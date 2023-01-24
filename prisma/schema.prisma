@@ -13,8 +13,8 @@ datasource db {
 model User {
   id              Int       @id @default(autoincrement())
   email           String    @unique
-  role            Role?
-  name            String?   @unique
+  role            Role?     @default(STUDENT)
+  username        String?   @unique
   password        String?
   createdProjects Project[] @relation("createdBy")
   Project         Project[] @relation("joinedBy")

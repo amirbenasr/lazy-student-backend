@@ -1,10 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `first_name` on the `profile` table. All the data in the column will be lost.
-  - You are about to drop the column `last_name` on the `profile` table. All the data in the column will be lost.
-
-*/
 -- DropIndex
 DROP INDEX `Project_creatorId_fkey` ON `project`;
 
@@ -12,10 +5,7 @@ DROP INDEX `Project_creatorId_fkey` ON `project`;
 DROP INDEX `Project_joinedId_fkey` ON `project`;
 
 -- AlterTable
-ALTER TABLE `profile` DROP COLUMN `first_name`,
-    DROP COLUMN `last_name`,
-    ADD COLUMN `fname` VARCHAR(191) NULL,
-    ADD COLUMN `lname` VARCHAR(191) NULL;
+ALTER TABLE `user` MODIFY `role` ENUM('STUDENT', 'PROFESSOR') NULL DEFAULT 'STUDENT';
 
 -- AddForeignKey
 ALTER TABLE `Profile` ADD CONSTRAINT `Profile_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

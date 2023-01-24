@@ -9,7 +9,7 @@ export const findProfileById = async (id: number) => {
     include: {
       user: {
         select: {
-          name: true,
+          username: true,
         },
       },
     },
@@ -20,7 +20,7 @@ export const findProfileById = async (id: number) => {
 export const findProfileByUsername = async (username: string) => {
   const user = await db.user.findFirstOrThrow({
     where: {
-      name: username,
+      username: username,
     },
   });
 

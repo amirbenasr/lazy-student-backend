@@ -92,3 +92,7 @@ userRouter.post("/login", async (request: Request, response: Response) => {
 userRouter.use("/profile", verifyToken, async (req: Request, res: Response) => {
   res.status(200).json("user is authenticated successfully");
 });
+userRouter.use("/userswithprofiles", verifyToken, async (req: Request, res: Response) => {
+
+  res.status(200).json({ success: true, users: UserService.findUsersWithProfiles });
+});
