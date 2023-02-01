@@ -1,15 +1,19 @@
+import { Project } from "@prisma/client";
 import { db } from "../utils/db.server";
 
 export const createProject = async (data: any) => {
   try {
     var project = data;
     project.deadline = new Date(project.deadline);
-    var result;
+    let result;
     result = await db.project.create({
-      data: project,
+      data: project as Project,
     });
+    console.log("this is the reuslt" + result);
+
+    return result;
   } catch (error) {
-    console.log(error);
+    return { error };
   }
 };
 export const getProjects = async (id: number) => {
@@ -54,4 +58,26 @@ export const joinProject = async (projectId: number, userId: number) => {
   }
 
   return project;
+};
+
+export const getProjectDetails = (id: number) => {
+  console.log(id);
+
+  if (id) {
+    try {
+      const project = db.project.findUnique({
+        where: {
+          id,
+        },
+        include: {
+          createdBy: true,
+          joinedBy: true,
+        },
+      });
+
+      return project;
+    } catch (error) {}
+  } else {
+    return null;
+  }
 };

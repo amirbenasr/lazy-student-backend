@@ -62,7 +62,6 @@ userRouter.post("/login", async (request: Request, response: Response) => {
   var data;
   var user;
   data = request.body;
-  console.log(data);
 
   user = await UserService.findUser(data.email);
 
@@ -92,7 +91,12 @@ userRouter.post("/login", async (request: Request, response: Response) => {
 userRouter.use("/profile", verifyToken, async (req: Request, res: Response) => {
   res.status(200).json("user is authenticated successfully");
 });
-userRouter.use("/userswithprofiles", verifyToken, async (req: Request, res: Response) => {
-
-  res.status(200).json({ success: true, users: UserService.findUsersWithProfiles });
-});
+userRouter.use(
+  "/userswithprofiles",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({ success: true, users: UserService.findUsersWithProfiles });
+  }
+);

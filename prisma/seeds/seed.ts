@@ -63,7 +63,7 @@ async function main() {
       },
     },
   });
-  console.log({ amir, chams });
+  // console.log({ amir, chams });
 }
 main()
   .then(async () => {
