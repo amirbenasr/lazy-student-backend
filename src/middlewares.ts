@@ -10,7 +10,7 @@ export const generateToken = async (user: any) => {
 
 export const verifyToken = async (req: any, res: any, next: any) => {
   const accessToken = req.cookies["lazy-token"];
-  console.log(accessToken);
+  // console.log(accessToken);
 
   try {
     if (!accessToken) {

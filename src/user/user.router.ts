@@ -131,7 +131,6 @@ userRouter.post("/login", async (request: Request, response: Response) => {
   var data;
   var user;
   data = request.body;
-  console.log(data);
 
   user = await UserService.findUser(data.email);
 

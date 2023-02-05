@@ -17,10 +17,10 @@ profileRouter.get("/", verifyToken, async (req: Request, res: Response) => {
   console.log(id);
 
   const profile = await ProfileService.findProfileById(id);
-  console.log(profile);
+  // console.log(profile);
 
   if (profile) {
-    console.log(profile);
+    // console.log(profile);
 
     return res.json(profile);
   } else {
@@ -91,7 +91,7 @@ profileRouter.put("/", verifyToken, async (req: Request, res: Response) => {
     profile.dob = null;
   }
   try {
-    console.log(profile);
+    // console.log(profile);
 
     const updated = ProfileService.updateProfile(profile);
 
