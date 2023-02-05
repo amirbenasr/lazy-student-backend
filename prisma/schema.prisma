@@ -16,6 +16,8 @@ model User {
   role            Role?     @default(STUDENT)
   username        String?   @unique
   password        String?
+  verified        Boolean?  @default(false)
+  verifToken      String?   @default(uuid())
   createdProjects Project[] @relation("createdBy")
   Project         Project[] @relation("joinedBy")
   Profile         Profile?
