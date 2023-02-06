@@ -24,15 +24,16 @@ model User {
 }
 
 model Profile {
-  id      Int       @id @default(autoincrement())
-  fname   String?
-  lname   String?
-  dob     DateTime? @default(now())
-  country String?   @default("international")
-  bio     String?
-  avatar  String?   @default("monkey")
-  user    User      @relation(fields: [userId], references: [id])
-  userId  Int       @unique
+  id        Int       @id @default(autoincrement())
+  fname     String?
+  lname     String?
+  dob       DateTime? @default(now())
+  country   String?   @default("international")
+  bio       String?
+  avatar    String?   @default("monkey")
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int       @unique
+  createdAt DateTime  @default(now())
 }
 
 model Project {

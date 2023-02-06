@@ -38,13 +38,15 @@ userRouter.post("/create", async (request: Request, response: Response) => {
 
     //hashing password
     password = await bcrypt.hash(user.password, 10);
-    //assign it to user
+
     user.password = password;
-    user.username = user.username;
 
     var created = await UserService.createUser(user);
 
-    const clientIp = request.socket.remoteAddress == "::ffff:127.0.0.1" ? /*"81.65.89.228"*/ "102.130.60.0" : request.socket.remoteAddress as string;
+    const clientIp =
+      request.socket.remoteAddress == "::ffff:127.0.0.1"
+        ? /*"81.65.89.228"*/ "102.130.60.0"
+        : (request.socket.remoteAddress as string);
 
     const profile: Profile = {
       bio: "",
@@ -58,62 +60,30 @@ userRouter.post("/create", async (request: Request, response: Response) => {
 
     var profileCreated = await PS.updateProfile(profile);
 
-
     ////////////////////Node Mailer Start /////////////////////////////////
 
     let testAccount = await nodemailer.createTestAccount();
-    console.log(testAccount.user)
+    console.log(testAccount.user);
 
-    var transporter = nodemailer.createTransport({ service: 'gmail', secure: true, auth: { user: 'elbennachamseddine@gmail.com', pass: 'nquccsxasiustowi' } });
-    /*
-        let transporter = nodemailer.createTransport({
-          host: "smtp.ethereal.email",
-          port: 587,
-          secure: false, // true for 465, false for other ports
-          auth: {
-            user: testAccount.user, // generated ethereal user
-            pass: testAccount.pass, // generated ethereal password
-          },
-        });*/
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      secure: true,
+      auth: { user: "elbennachamseddine@gmail.com", pass: "nquccsxasiustowi" },
+    });
 
-    /* var transporter = nodemailer.createTransport({
-       service: 'gmail',
-       auth: {
-         user: 'hummingbird.mobiledev@gmail.com',
-         pass: 'Pull-ina2023'
-       }
-     });
-    /*
-        let info = await transporter.sendMail({
-          from: testAccount.user, // sender address
-          to: "hummingbird.mobiledev@gmail.com", // list of receivers
-          subject: "Hello", // Subject line
-          text: "Hello world?", // plain text body
-          //  html: "<b>Hello world?</b>", // html body
-        });*/
     var mailOptions = {
-      from: 'elbennachamseddine@gmail.com', // sender address
-      to: "tunis.mirof@gmail.com,hummingbird.mobiledev@gmail.com", // list of receivers
+      from: "elbennachamseddine@gmail.com", // sender address
+      to: user.email, // list of receivers
       subject: "Activate Your New Account", // Subject line
       //text: "Hello world?", // plain text body
-      html: "<h4> Hi " + created.username + ",</h4>",/* +
-
-        +"<h7> Thanks for getting started with our Lazy-Student!</h7>" +
-
-        +"<h7>  We need a little more information to complete your registration, including a confirmation of your email address.</h7>" +
-
-        +"<h7> Click below to confirm your email address:</h7>" +
-
-        +"<h7> " + user.verifyToken + " </h7>" +
-
-        +"<h7>  If you have problems, please paste the above URL into your web browser.</h7>",*/ // html body
+      html: `<h1>hello dear member <h1>`,
     };
-    await transporter.sendMail(mailOptions, function (error, info) {
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log(info)
+        console.log(info);
         console.log(error);
       } else {
-        console.log('Email sent: ' + info.response);
+        console.log("Email sent: " + info.response);
       }
     });
 
@@ -121,7 +91,7 @@ userRouter.post("/create", async (request: Request, response: Response) => {
 
     response.status(200).json(created);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     response.status(401).json({ error: error });
   }
 });
@@ -160,8 +130,12 @@ userRouter.post("/login", async (request: Request, response: Response) => {
 userRouter.use("/profile", verifyToken, async (req: Request, res: Response) => {
   res.status(200).json("user is authenticated successfully");
 });
-userRouter.use("/userswithprofiles", verifyToken, async (req: Request, res: Response) => {
-
-  res.status(200).json({ success: true, users: UserService.findUsersWithProfiles });
-});
-
+userRouter.use(
+  "/userswithprofiles",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    res
+      .status(200)
+      .json({ success: true, users: UserService.findUsersWithProfiles });
+  }
+);
