@@ -39,7 +39,7 @@ export const updateProfile = async (data: Profile) => {
     },
   });
   if (profile) {
-    console.log(data);
+    // console.log(data);
 
     const result = await db.profile.update({
       data,

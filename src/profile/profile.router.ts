@@ -38,56 +38,49 @@ profileRouter.get("/public/:username", async (req: Request, res: Response) => {
   }
 });
 
-profileRouter.put("/", verifyToken, async (req: Request, res: Response) => {
-  const userId = res.locals.id;
+profileRouter.put(
+  "/",
+  [verifyToken, multer().single("avatar")],
+  async (req: Request, res: Response) => {
+    const userId = res.locals.id;
 
-  const userProfile = await ProfileService.findProfileById(userId);
-  const username = userProfile?.user.username;
+    const userProfile = await ProfileService.findProfileById(userId);
+    const username = userProfile?.user.username;
 
-  const { fname, lname, dob, bio } = req.body;
+    // const { fname, lname, bio, avatar } = req.body;
 
-  const profile: Profile = {
-    fname: fname,
-    lname: lname,
-    bio: bio,
-    userId,
-  };
-  //if file exist on the server
-  var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      var newDirectory = "uploads/" + username;
-      fs.mkdirSync(newDirectory, { recursive: true });
-      cb(null, newDirectory);
-    },
+    console.log(JSON.stringify(req.body));
 
-    filename: function (req, file, cb) {
-      cb(null, "profile.jpg"); //Appending .jpg
-      profile.avatar = "profile";
-    },
-  });
+    // const profile: Profile = {
+    //   fname: fname,
+    //   lname: lname,
+    //   bio: bio,
+    //   userId,
+    // };
 
-  const upload = multer({ storage: storage }).single("avatar");
+    // const upload = multer({ storage: storage }).single("avatar");
 
-  upload(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      console.log("A Multer error occurred when uploading.");
-    } else if (err) {
-      console.log(err);
-      console.log("An unknown error occurred when uploading.");
+    // upload(req, res, function (err) {
+    //   if (err instanceof multer.MulterError) {
+    //     console.log("A Multer error occurred when uploading.");
+    //   } else if (err) {
+    //     console.log(err);
+    //     console.log("An unknown error occurred when uploading.");
+    //   }
+    //   console.log("Everything went fine.");
+    // });
+
+    // if (!profile.dob) {
+    //   profile.dob = null;
+    // }
+    try {
+      // const updated = ProfileService.updateProfile(profile);
+
+      return res
+        .status(201)
+        .json({ succes: true, msg: "updated successfully" });
+    } catch (error) {
+      return res.status(404).json({ error });
     }
-    console.log("Everything went fine.");
-  });
-
-  if (!profile.dob) {
-    profile.dob = null;
   }
-  try {
-    const updated = ProfileService.updateProfile(profile);
-
-    return res
-      .status(201)
-      .json({ succes: true, msg: "updated successfully", updated });
-  } catch (error) {
-    return res.status(404).json({ error });
-  }
-});
+);
