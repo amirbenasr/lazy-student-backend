@@ -58,13 +58,12 @@ userRouter.post("/create", async (request: Request, response: Response) => {
       dob: new Date(),
     };
 
+    // create profile after user insertion
     var profileCreated = await PS.updateProfile(profile);
 
     ////////////////////Node Mailer Start /////////////////////////////////
 
-    let testAccount = await nodemailer.createTestAccount();
-    console.log(testAccount.user);
-
+    // using email
     var transporter = nodemailer.createTransport({
       service: "gmail",
       secure: true,
@@ -72,6 +71,7 @@ userRouter.post("/create", async (request: Request, response: Response) => {
     });
 
     var mailOptions = {
+      // TODO: 'change from email to server config'
       from: "elbennachamseddine@gmail.com", // sender address
       to: user.email, // list of receivers
       subject: "Activate Your New Account", // Subject line
