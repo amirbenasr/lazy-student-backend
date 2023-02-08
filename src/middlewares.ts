@@ -27,6 +27,8 @@ export const verifyToken = async (req: any, res: any, next: any) => {
       var user_id = decodedToken.user;
       req.authenticated = true;
       res.locals.id = user_id;
+      req.params.id = user_id;
+
       return next();
     } else {
       return res.status(404).json("the access token is malformed");

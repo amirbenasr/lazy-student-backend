@@ -1,10 +1,10 @@
 export type Profile = {
-  id?: number;
+  id?: string;
   fname: string | null;
   lname: string | null;
   dob?: Date | null;
   country?: string | null;
   bio: string | null;
   avatar?: string | null;
-  userId: number;
+  userId: string;
 };

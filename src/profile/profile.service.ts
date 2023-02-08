@@ -1,7 +1,7 @@
 import { Profile } from "../profile.type";
 import { db } from "../utils/db.server";
 
-export const findProfileById = async (id: number) => {
+export const findProfileById = async (id: string) => {
   const profile = await db.profile.findFirst({
     where: {
       userId: id,
@@ -28,7 +28,15 @@ export const findProfileByUsername = async (username: string) => {
     where: {
       userId: user.id,
     },
+    include: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
   });
+
   return profile;
 };
 
@@ -39,8 +47,6 @@ export const updateProfile = async (data: Profile) => {
     },
   });
   if (profile) {
-    // console.log(data);
-
     const result = await db.profile.update({
       data,
       where: { userId: data.userId },

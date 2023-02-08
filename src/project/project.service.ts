@@ -16,7 +16,7 @@ export const createProject = async (data: any) => {
     return { error };
   }
 };
-export const getProjects = async (id: number) => {
+export const getProjects = async (id: string) => {
   try {
     var projects;
     projects = await db.project.findMany({
@@ -39,7 +39,7 @@ export const getAllProjects = async () => {
   return projects;
 };
 
-export const joinProject = async (projectId: number, userId: number) => {
+export const joinProject = async (projectId: number, userId: string) => {
   let project;
 
   project = await db.project.findFirst({ where: { id: projectId } });

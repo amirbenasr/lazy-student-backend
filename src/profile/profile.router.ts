@@ -9,6 +9,7 @@ import * as ProfileService from "./profile.service";
 import jwtDecode from "jwt-decode";
 import { Profile } from "../profile.type";
 import fs from "fs";
+import { storageConfig } from "../utils/multer";
 
 export const profileRouter = express.Router();
 
@@ -40,24 +41,35 @@ profileRouter.get("/public/:username", async (req: Request, res: Response) => {
 
 profileRouter.put(
   "/",
-  [verifyToken, multer().single("avatar")],
+  [verifyToken, multer({ storage: storageConfig() }).single("avatar")],
   async (req: Request, res: Response) => {
     const userId = res.locals.id;
 
     const userProfile = await ProfileService.findProfileById(userId);
+    // const upload =
     const username = userProfile?.user.username;
 
-    // const { fname, lname, bio, avatar } = req.body;
+    const { fname, lname, bio } = req.body;
+    const data = req.file;
 
-    console.log(JSON.stringify(req.body));
-
-    // const profile: Profile = {
-    //   fname: fname,
-    //   lname: lname,
-    //   bio: bio,
-    //   userId,
-    // };
-
+    // upload(req, res, function (err) {
+    //   if (err instanceof multer.MulterError) {
+    //     console.log("A Multer error occurred when uploading.");
+    //   } else if (err) {
+    //     console.log(err);
+    //     console.log("An unknown error occurred when uploading.");
+    //   }
+    //   console.log("Everything went fine.");
+    // });
+    const profile: Profile = {
+      fname: fname,
+      lname: lname,
+      bio: bio,
+      userId,
+    };
+    if (data) {
+      profile.avatar = "profile";
+    }
     // const upload = multer({ storage: storage }).single("avatar");
 
     // upload(req, res, function (err) {
@@ -74,7 +86,9 @@ profileRouter.put(
     //   profile.dob = null;
     // }
     try {
-      // const updated = ProfileService.updateProfile(profile);
+      console.log(profile);
+
+      const updated = ProfileService.updateProfile(profile);
 
       return res
         .status(201)
