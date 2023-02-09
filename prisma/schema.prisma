@@ -71,6 +71,11 @@ enum Technology {
   VUEJS
   NEXTJS
   NATIVE
+  STATIC
+  LARAVEL
+  REACTNATIVE
+  ANDROID
+  IOS
 }
 
 enum Status {

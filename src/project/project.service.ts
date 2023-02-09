@@ -3,7 +3,11 @@ import { db } from "../utils/db.server";
 
 export const createProject = async (data: any) => {
   try {
+    console.log("hitting this ");
+
     var project = data;
+    console.log(project);
+
     project.deadline = new Date(project.deadline);
     let result;
     result = await db.project.create({

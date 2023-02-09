@@ -26,7 +26,7 @@ projectRouter.get(
 
 // GET PROJECT DETAILS BY ID
 
-projectRouter.use("/:id", verifyToken, async (req: Request, res: Response) => {
+projectRouter.get("/:id", verifyToken, async (req: Request, res: Response) => {
   const projectId = Number.parseInt(req.params["id"]);
 
   const project = await ProjectService.getProjectDetails(projectId);
@@ -44,9 +44,13 @@ projectRouter.post(
   "/create",
   verifyToken,
   async (request: Request, response: Response) => {
+    console.log("wtff ?");
+
     try {
       var data = request.body;
-      data.creatorId = response.locals.id;
+
+      data.creatorId = response.locals.id.toString();
+
       var result = await ProjectService.createProject(data);
       console.log(result);
 
@@ -64,17 +68,21 @@ projectRouter.post(
 //GET : All projects with status pending
 
 //POST : Join Project
-projectRouter.use("/join", verifyToken, async (req: Request, res: Response) => {
-  try {
-    let projectId = req.body.projectId;
-    let id = res.locals.id;
-    let result = await ProjectService.joinProject(projectId, id);
-    if (result != null) {
-      res.status(200).json(result);
-    } else {
-      res.status(200).json("project already joined");
+projectRouter.post(
+  "/join",
+  verifyToken,
+  async (req: Request, res: Response) => {
+    try {
+      let projectId = req.body.projectId;
+      let id = res.locals.id;
+      let result = await ProjectService.joinProject(projectId, id);
+      if (result != null) {
+        res.status(200).json(result);
+      } else {
+        res.status(200).json("project already joined");
+      }
+    } catch (error) {
+      res.status(401).json(error);
     }
-  } catch (error) {
-    res.status(401).json(error);
   }
-});
+);

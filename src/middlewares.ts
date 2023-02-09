@@ -10,7 +10,6 @@ export const generateToken = async (user: any) => {
 
 export const verifyToken = async (req: any, res: any, next: any) => {
   const accessToken = req.cookies["lazy-token"];
-  // console.log(accessToken);
 
   try {
     if (!accessToken) {
@@ -25,12 +24,16 @@ export const verifyToken = async (req: any, res: any, next: any) => {
       var decodedToken: any;
       decodedToken = jwt_decode(accessToken);
       var user_id = decodedToken.user;
+
       req.authenticated = true;
-      res.locals.id = user_id;
-      req.params.id = user_id;
+      res.locals.id = user_id as string;
+      req.params.id = user_id as string;
+      console.log("reached here");
 
       return next();
     } else {
+      console.log("malformed");
+
       return res.status(404).json("the access token is malformed");
     }
   } catch (error) {
