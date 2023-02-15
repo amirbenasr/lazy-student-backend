@@ -27,7 +27,7 @@ export const verifyToken = async (req: any, res: any, next: any) => {
 
       req.authenticated = true;
       res.locals.id = user_id as string;
-      req.params.id = user_id as string;
+      req.params.user_id = user_id as string;
       console.log("reached here");
 
       return next();

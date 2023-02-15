@@ -7,6 +7,7 @@ import { projectRouter } from "./project/project.router";
 import cookieParser from "cookie-parser";
 import { profileRouter } from "./profile/profile.router";
 
+import morgan from "morgan";
 dotenv.config();
 
 if (!process.env.PORT) {
@@ -16,8 +17,8 @@ if (!process.env.PORT) {
 const PORT: number = parseInt(process.env.PORT);
 
 const app = express();
-
-app.use(cors());
+app.use(morgan("dev"));
+app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 app.use(express.json());
 app.use(cookieParser());
 app.use("/users", userRouter);

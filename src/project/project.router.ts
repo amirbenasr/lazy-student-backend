@@ -13,6 +13,8 @@ projectRouter.get(
   verifyToken,
   async (request: Request, response: Response) => {
     var id = response.locals.id;
+    console.log(id);
+
     var projects;
     projects = await ProjectService.getProjects(id);
 
@@ -28,8 +30,18 @@ projectRouter.get(
 
 projectRouter.get("/:id", verifyToken, async (req: Request, res: Response) => {
   const projectId = Number.parseInt(req.params["id"]);
+  const userId = res.locals.id;
 
   const project = await ProjectService.getProjectDetails(projectId);
+  if (userId != project?.creatorId) {
+    console.log(userId);
+    console.log(project?.creatorId);
+
+    return res.status(404).json({ succes: false });
+  }
+
+  console.log("project from router" + project);
+
   // excluding password field
   const userWithoutPassword = exclude.default(project?.createdBy, [
     "password",
@@ -52,15 +64,14 @@ projectRouter.post(
       data.creatorId = response.locals.id.toString();
 
       var result = await ProjectService.createProject(data);
-      console.log(result);
 
       if (result) {
-        response.json({ success: true, data: result });
+        return response.json({ success: true, data: result });
       } else {
-        response.json({ success: false, error: result });
+        return response.json({ success: false, error: result });
       }
     } catch (error) {
-      response.status(404).json({ error: error });
+      return response.status(404).json({ error: error });
     }
   }
 );
@@ -77,12 +88,12 @@ projectRouter.post(
       let id = res.locals.id;
       let result = await ProjectService.joinProject(projectId, id);
       if (result != null) {
-        res.status(200).json(result);
+        return res.status(200).json(result);
       } else {
-        res.status(200).json("project already joined");
+        return res.status(200).json("project already joined");
       }
     } catch (error) {
-      res.status(401).json(error);
+      return res.status(401).json(error);
     }
   }
 );

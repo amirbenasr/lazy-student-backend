@@ -80,8 +80,12 @@ export const getProjectDetails = (id: number) => {
       });
 
       return project;
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   } else {
+    console.log("we cant be here");
+
     return null;
   }
 };
