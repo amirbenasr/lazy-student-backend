@@ -18,11 +18,8 @@ profileRouter.get("/", verifyToken, async (req: Request, res: Response) => {
   console.log(id);
 
   const profile = await ProfileService.findProfileById(id);
-  // console.log(profile);
 
   if (profile) {
-    // console.log(profile);
-
     return res.json(profile);
   } else {
     return res.json({ success: false, message: "user not found" });
@@ -52,15 +49,6 @@ profileRouter.put(
     const { fname, lname, bio } = req.body;
     const data = req.file;
 
-    // upload(req, res, function (err) {
-    //   if (err instanceof multer.MulterError) {
-    //     console.log("A Multer error occurred when uploading.");
-    //   } else if (err) {
-    //     console.log(err);
-    //     console.log("An unknown error occurred when uploading.");
-    //   }
-    //   console.log("Everything went fine.");
-    // });
     const profile: Profile = {
       fname: fname,
       lname: lname,
@@ -70,21 +58,7 @@ profileRouter.put(
     if (data) {
       profile.avatar = "profile";
     }
-    // const upload = multer({ storage: storage }).single("avatar");
 
-    // upload(req, res, function (err) {
-    //   if (err instanceof multer.MulterError) {
-    //     console.log("A Multer error occurred when uploading.");
-    //   } else if (err) {
-    //     console.log(err);
-    //     console.log("An unknown error occurred when uploading.");
-    //   }
-    //   console.log("Everything went fine.");
-    // });
-
-    // if (!profile.dob) {
-    //   profile.dob = null;
-    // }
     try {
       console.log(profile);
 

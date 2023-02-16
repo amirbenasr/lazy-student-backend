@@ -13,7 +13,7 @@ import { updateProfile } from "../profile/profile.service";
 import { Profile } from "../profile.type";
 import { randomUUID } from "crypto";
 import * as Geoip from "geoip-lite";
-import * as nodemailer from "nodemailer";
+import { getEmailForm, sendVerificationEmail } from "../utils/mailform";
 
 export const userRouter = express.Router();
 
@@ -61,38 +61,30 @@ userRouter.post("/create", async (request: Request, response: Response) => {
     // create profile after user insertion
     var profileCreated = await PS.updateProfile(profile);
 
-    ////////////////////Node Mailer Start /////////////////////////////////
-
-    // using email
-    var transporter = nodemailer.createTransport({
-      service: "gmail",
-      secure: true,
-      auth: { user: "elbennachamseddine@gmail.com", pass: "nquccsxasiustowi" },
-    });
-
-    var mailOptions = {
-      // TODO: 'change from email to server config'
-      from: "elbennachamseddine@gmail.com", // sender address
-      to: user.email, // list of receivers
-      subject: "Activate Your New Account", // Subject line
-      //text: "Hello world?", // plain text body
-      html: `<h1>hello dear member <h1>`,
-    };
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(info);
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-
-    //////////////////// Node Mailer End/////////////////////////////////
+    // send Verification email
+    sendVerificationEmail(created);
 
     response.status(200).json(created);
   } catch (error) {
     console.log(error);
     response.status(401).json({ error: error });
+  }
+});
+
+// verification api
+userRouter.get("/verify/:token", async (req, res) => {
+  const { token } = req.params;
+  console.log(token);
+
+  try {
+    const user = await UserService.verifyUserByToken(token);
+    if (user?.verified) {
+      return res.redirect(301, "http://localhost:5173/login?verification=true");
+    } else {
+      res.json(JSON.stringify(user));
+    }
+  } catch (error) {
+    res.json(error);
   }
 });
 

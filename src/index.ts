@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import express, { response } from "express";
+import express, { Request, Response, response } from "express";
 import cors from "cors";
 
 import { userRouter } from "./user/user.router";
@@ -8,6 +8,8 @@ import cookieParser from "cookie-parser";
 import { profileRouter } from "./profile/profile.router";
 
 import morgan from "morgan";
+import { sendVerificationEmail } from "./utils/mailform";
+import { findUser } from "./user/user.service";
 dotenv.config();
 
 if (!process.env.PORT) {
@@ -27,4 +29,16 @@ app.use("/profile", profileRouter);
 
 app.listen(PORT || 3000, async () => {
   console.log(`Listening on port ${PORT} `);
+});
+
+app.get("/verify_email/:email", async (req: Request, res: Response) => {
+  const email = req.params["email"];
+  console.log(email);
+
+  const user = await findUser(email);
+
+  sendVerificationEmail(user!);
+
+  if (user) return res.json("email sent succesffully");
+  if (!user) return res.json("email not found");
 });
