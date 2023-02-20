@@ -18,6 +18,7 @@ model User {
   password        String?
   verified        Boolean?  @default(false)
   verifToken      String?   @default(uuid())
+  resetToken      String?
   createdProjects Project[] @relation("createdBy")
   Project         Project[] @relation("joinedBy")
   Profile         Profile?

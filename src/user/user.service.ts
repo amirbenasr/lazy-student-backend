@@ -1,4 +1,15 @@
+import { User } from "@prisma/client";
 import { db } from "../utils/db.server";
+
+export const updateUser = async (args: any, identifier: string) => {
+  const result = await db.user.update({
+    data: args,
+    where: {
+      id: identifier,
+    },
+  });
+  return result;
+};
 
 export const verifyUserByToken = async (token: string) => {
   let user;
@@ -25,10 +36,17 @@ export const verifyUserByToken = async (token: string) => {
   }
   return user;
 };
-export const findUser = async (email: string) => {
+export const findUserByEmail = async (email: string) => {
   return await db.user.findUnique({
     where: {
       email,
+    },
+  });
+};
+export const findUserById = async (id: string) => {
+  return await db.user.findUnique({
+    where: {
+      id,
     },
   });
 };

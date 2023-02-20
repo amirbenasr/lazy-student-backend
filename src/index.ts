@@ -8,8 +8,8 @@ import cookieParser from "cookie-parser";
 import { profileRouter } from "./profile/profile.router";
 
 import morgan from "morgan";
-import { sendVerificationEmail } from "./utils/mailform";
-import { findUser } from "./user/user.service";
+import { findUserByEmail } from "./user/user.service";
+import { getOnBoardingEmail, sendEmail } from "./utils/mailform";
 dotenv.config();
 
 if (!process.env.PORT) {
@@ -35,9 +35,9 @@ app.get("/verify_email/:email", async (req: Request, res: Response) => {
   const email = req.params["email"];
   console.log(email);
 
-  const user = await findUser(email);
+  const user = await findUserByEmail(email);
 
-  sendVerificationEmail(user!);
+  sendEmail(getOnBoardingEmail(user!), user!);
 
   if (user) return res.json("email sent succesffully");
   if (!user) return res.json("email not found");

@@ -13,7 +13,15 @@ import { updateProfile } from "../profile/profile.service";
 import { Profile } from "../profile.type";
 import { randomUUID } from "crypto";
 import * as Geoip from "geoip-lite";
-import { getEmailForm, sendVerificationEmail } from "../utils/mailform";
+import {
+  getOnBoardingEmail,
+  getPasswordResetEmail,
+  sendEmail,
+} from "../utils/mailform";
+import { env } from "process";
+import jwtDecode from "jwt-decode";
+import { User } from "@prisma/client";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
 
 export const userRouter = express.Router();
 
@@ -31,12 +39,61 @@ userRouter.get("/", async (request: Request, response: Response) => {
 
 //POST: CREATE NEW USER
 
+userRouter.post("/forget", async (req: Request, res: Response) => {
+  const { email } = req.body;
+  console.log(email);
+
+  const user = await UserService.findUserByEmail(email);
+  try {
+    //we need to generate a jwt token
+    const jwt = await generateToken({ user: user!.id });
+    //update the user's field
+    await UserService.updateUser({ resetToken: jwt }, user!.id);
+    sendEmail(getPasswordResetEmail(email, jwt), user!);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json({ error });
+  } //generate the url containing that token
+  return res.status(200).json({ success: true });
+});
+
+userRouter.post("/verify", async (req: Request, res: Response) => {
+  const { token, password } = req.body;
+  type omg = {
+    user: string;
+    iat: number;
+  };
+  //deconstruct the token
+  const decodedToken = jwtDecode(token) as omg;
+  const { iat, user: userId } = decodedToken;
+  //verify if id exist - and the token is same
+  const user = await UserService.findUserById(userId);
+
+  if (user && user.resetToken == token) {
+    console.log("we are able to update now");
+    // hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    //update the user with new hashed password
+    const result = await UserService.updateUser(
+      { password: hashedPassword },
+      user.id
+    ).then((val) => {
+      UserService.updateUser({ resetToken: null }, val.id);
+    });
+    console.log(result);
+
+    //update token field to null
+  }
+  res.status(200).json({ msg: "password reset" });
+});
+
 userRouter.post("/create", async (request: Request, response: Response) => {
   try {
     var user = request.body;
     let password;
 
     //hashing password
+    // const salt = await bcrypt.genSalt(process.env.HASHING_SECRET)
     password = await bcrypt.hash(user.password, 10);
 
     user.password = password;
@@ -59,15 +116,22 @@ userRouter.post("/create", async (request: Request, response: Response) => {
     };
 
     // create profile after user insertion
-    var profileCreated = await PS.updateProfile(profile);
+    await PS.updateProfile(profile);
 
     // send Verification email
-    sendVerificationEmail(created);
+    sendEmail(getOnBoardingEmail(created), created);
 
-    response.status(200).json(created);
+    response.status(200).json({ success: true });
   } catch (error) {
-    console.log(error);
-    response.status(401).json({ error: error });
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === "P2002")
+        response.status(401).json({
+          success: false,
+          message:
+            "user with the same " + error!.meta!.target + " already exists",
+        });
+    } else {
+    }
   }
 });
 
@@ -94,7 +158,7 @@ userRouter.post("/login", async (request: Request, response: Response) => {
   var user;
   data = request.body;
 
-  user = await UserService.findUser(data.email);
+  user = await UserService.findUserByEmail(data.email);
 
   if (!(data.email && data.password) || !user) {
     return response
@@ -109,7 +173,7 @@ userRouter.post("/login", async (request: Request, response: Response) => {
   if (user && matchy) {
     //generating token and save it in cookie
 
-    generateToken(user).then((token) => {
+    generateToken({ user: user.id }).then((token) => {
       response.status(200).json({ success: true, token });
     });
   } else {

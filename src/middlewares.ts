@@ -2,8 +2,8 @@ import jwt_decode from "jwt-decode";
 
 import { sign, verify } from "jsonwebtoken";
 
-export const generateToken = async (user: any) => {
-  var accessToken = sign({ user: user.id }, "secret-lounge");
+export const generateToken = async (payload: any) => {
+  var accessToken = sign(payload, process.env.HASHING_SECRET!.toString());
 
   return accessToken;
 };
@@ -18,7 +18,7 @@ export const verifyToken = async (req: any, res: any, next: any) => {
         .json({ success: false, message: "not authorized" });
     }
 
-    const verified = verify(accessToken, "secret-lounge");
+    const verified = verify(accessToken, process.env.HASHING_SECRET!);
 
     if (verified) {
       var decodedToken: any;
