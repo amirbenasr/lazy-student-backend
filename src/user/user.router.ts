@@ -2,27 +2,22 @@ import express from "express";
 
 import * as UserService from "./user.service";
 import type { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
 import * as PS from "../profile/profile.service";
 import * as bcrypt from "bcrypt";
 
 import { generateToken, verifyToken } from "../middlewares";
 
 import cookieParser from "cookie-parser";
-import { updateProfile } from "../profile/profile.service";
 import { Profile } from "../profile.type";
-import { randomUUID } from "crypto";
 import * as Geoip from "geoip-lite";
 import {
   getOnBoardingEmail,
   getPasswordResetEmail,
   sendEmail,
 } from "../utils/mailform";
-import { env } from "process";
 import jwtDecode from "jwt-decode";
-import { User } from "@prisma/client";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-
+import * as MailFormatter from "../utils/server";
 export const userRouter = express.Router();
 
 userRouter.use(cookieParser());
@@ -119,8 +114,9 @@ userRouter.post("/create", async (request: Request, response: Response) => {
     await PS.updateProfile(profile);
 
     // send Verification email
-    sendEmail(getOnBoardingEmail(created), created);
-
+    const url = `http://localhost:3000/users/verify/${created.verifToken}`;
+    await MailFormatter.default.onboardingEmail(created.username!, url);
+    // const html = await onbo(created.username!, url);
     response.status(200).json({ success: true });
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
