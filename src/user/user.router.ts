@@ -17,7 +17,7 @@ import {
 } from "../utils/mailform";
 import jwtDecode from "jwt-decode";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
-import * as MailFormatter from "../utils/server";
+import * as MailFormatter from "../mailer/server";
 export const userRouter = express.Router();
 
 userRouter.use(cookieParser());
@@ -44,7 +44,13 @@ userRouter.post("/forget", async (req: Request, res: Response) => {
     const jwt = await generateToken({ user: user!.id });
     //update the user's field
     await UserService.updateUser({ resetToken: jwt }, user!.id);
-    sendEmail(getPasswordResetEmail(email, jwt), user!);
+    const url = "http://localhost:5173/reset?it=" + user?.resetToken;
+
+    const html = await MailFormatter.default.passwordResetEmail(
+      user?.username!,
+      url
+    );
+    sendEmail(html, user!);
   } catch (error) {
     console.log(error);
     return res.status(400).json({ error });
@@ -115,7 +121,15 @@ userRouter.post("/create", async (request: Request, response: Response) => {
 
     // send Verification email
     const url = `http://localhost:3000/users/verify/${created.verifToken}`;
-    await MailFormatter.default.onboardingEmail(created.username!, url);
+    try {
+      const html = await MailFormatter.default.onboardingEmail(
+        created.username!,
+        url
+      );
+      sendEmail(html, created);
+    } catch (error) {
+      console.log(error);
+    }
     // const html = await onbo(created.username!, url);
     response.status(200).json({ success: true });
   } catch (error) {

@@ -6,15 +6,15 @@ import dotenv from "dotenv";
 import path from "path";
 
 async function renderEmail(templateName: string) {
-  const templatesDir = path.join(__dirname, "src", "templates");
+  const templatesDir = path.join(__dirname, "templates");
   const templatePath = path.join(templatesDir, templateName);
   const rawTemplate = (await fs.readFile(templatePath)).toString();
 
   const { html } = await Maizzle.render(rawTemplate, {
     tailwind: {
-      config: require("./tailwind.config.js"),
+      config: require(path.join(__dirname, "tailwind.config.js")),
     },
-    maizzle: require("./config.production.js"),
+    maizzle: require(path.join(__dirname, "config.production.js")),
   });
 
   return html;
