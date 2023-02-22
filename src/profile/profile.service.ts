@@ -10,6 +10,7 @@ export const findProfileById = async (id: string) => {
       user: {
         select: {
           username: true,
+          role: true,
         },
       },
     },

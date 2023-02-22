@@ -5,6 +5,7 @@ import { body, validationResult } from "express-validator";
 import { verifyToken } from "../middlewares";
 import * as ProjectService from "./project.service";
 import * as exclude from "../utils/exclude";
+import { Project, Status } from "@prisma/client";
 export const projectRouter = express.Router();
 
 // GET: List of all projects by user email
@@ -25,6 +26,22 @@ projectRouter.get(
     }
   }
 );
+
+// all student projects
+projectRouter.get("/feed", async (req: Request, res: Response) => {
+  let { status, order } = req.query as {
+    status: Status | undefined;
+    order: "asc" | "desc";
+  };
+  let projects: Project[] = [];
+  try {
+    status = status?.toUpperCase() as Status;
+    projects = await ProjectService.getAllProjects(status, order);
+    res.json(projects);
+  } catch (error) {
+    res.json({ projects });
+  }
+});
 
 // GET PROJECT DETAILS BY ID
 

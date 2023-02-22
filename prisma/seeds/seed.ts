@@ -63,6 +63,37 @@ async function main() {
       },
     },
   });
+  const professor = await prisma.user.upsert({
+    where: { email: "amir.bennasr@esprit.tn" },
+    update: {
+      Profile: {
+        create: {
+          fname: "Professor",
+          lname: "Del capital",
+          dob: new Date(),
+          country: "Ariana",
+          bio: "I am not gay !",
+          avatar: "monkey",
+        },
+      },
+    },
+    create: {
+      email: "amir.bennasr@esprit.tn",
+      role: "PROFESSOR",
+      username: "ElProfessor",
+      password: await bcrypt.hash("Samir", 10),
+      Profile: {
+        create: {
+          fname: "Professor",
+          lname: "Del capital",
+          dob: new Date(),
+          country: "Ariana",
+          bio: "I am super professor !",
+          avatar: "monkey",
+        },
+      },
+    },
+  });
   // console.log({ amir, chams });
 }
 main()

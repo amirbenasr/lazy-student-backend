@@ -45,6 +45,7 @@ userRouter.post("/forget", async (req: Request, res: Response) => {
     //update the user's field
     await UserService.updateUser({ resetToken: jwt }, user!.id);
     const url = "http://localhost:5173/reset?it=" + user?.resetToken;
+    console.log(url);
 
     const html = await MailFormatter.default.passwordResetEmail(
       user?.username!,

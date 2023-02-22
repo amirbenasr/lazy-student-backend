@@ -1,4 +1,4 @@
-import { Project } from "@prisma/client";
+import { Project, Status, Technology } from "@prisma/client";
 import { db } from "../utils/db.server";
 
 export const createProject = async (data: any) => {
@@ -36,10 +36,22 @@ export const getProjects = async (id: string) => {
   }
 };
 
-export const getAllProjects = async () => {
+export const getAllProjects = async (
+  status?: Status,
+  order: "asc" | "desc" = "asc",
+  tech?: Technology
+) => {
   var projects = [];
 
-  projects = await db.project.findMany();
+  projects = await db.project.findMany({
+    where: {
+      status,
+      technology: tech,
+    },
+    orderBy: {
+      createdAt: order,
+    },
+  });
   return projects;
 };
 
