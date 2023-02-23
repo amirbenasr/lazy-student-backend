@@ -40,6 +40,8 @@ model Profile {
 
 model Proposal {
   id        String   @id @default(uuid())
+  price     String
+  comment   String
   user      User     @relation(fields: [userId], references: [id])
   Project   Project? @relation(fields: [projectId], references: [id])
   projectId Int?
