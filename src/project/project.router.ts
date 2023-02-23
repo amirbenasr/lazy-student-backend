@@ -39,7 +39,7 @@ projectRouter.get("/feed", async (req: Request, res: Response) => {
     projects = await ProjectService.getAllProjects(status, order);
     res.json(projects);
   } catch (error) {
-    res.json({ projects });
+    res.json( projects );
   }
 });
 
@@ -73,7 +73,6 @@ projectRouter.post(
   "/create",
   verifyToken,
   async (request: Request, response: Response) => {
-    console.log("wtff ?");
 
     try {
       var data = request.body;

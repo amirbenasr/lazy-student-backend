@@ -51,6 +51,15 @@ export const getAllProjects = async (
     orderBy: {
       createdAt: order,
     },
+    include : {
+      createdBy:{
+        select:{
+          username:true,
+          Profile:true
+        }
+      }
+    
+    }
   });
   return projects;
 };
