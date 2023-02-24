@@ -53,6 +53,8 @@ model Project {
   name        String
   description String
   pages       Int        @default(1)
+  minPrice    Int
+  maxPrice    Int
   type        Type
   technology  Technology
   creatorId   String

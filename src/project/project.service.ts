@@ -95,7 +95,12 @@ export const getProjectDetails = (id: number) => {
           id,
         },
         include: {
-          createdBy: true,
+
+          createdBy: {
+            include:{
+              Profile:true
+            }
+          },
           joinedBy: true,
         },
       });
