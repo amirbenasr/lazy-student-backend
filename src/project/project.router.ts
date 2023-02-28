@@ -4,6 +4,7 @@ import type { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { verifyToken } from "../middlewares";
 import * as ProjectService from "./project.service";
+import * as UserService from '../user/user.service'
 import * as exclude from "../utils/exclude";
 import { Project, Status } from "@prisma/client";
 export const projectRouter = express.Router();
@@ -49,8 +50,10 @@ projectRouter.get("/:id", verifyToken, async (req: Request, res: Response) => {
   const projectId = Number.parseInt(req.params["id"]);
   const userId = res.locals.id;
 
+  const user = await UserService.findUserById(userId);
+
   const project = await ProjectService.getProjectDetails(projectId);
-  if (userId != project?.creatorId) {
+  if (userId != project?.creatorId && user?.role=='STUDENT' ) {
     console.log(userId);
     console.log(project?.creatorId);
 
@@ -79,8 +82,13 @@ projectRouter.post(
 
       data.creatorId = response.locals.id.toString();
 
+      console.log(data);
+      
+
       var result = await ProjectService.createProject(data);
 
+      console.log(result);
+      
       if (result) {
         return response.json({ success: true, data: result });
       } else {

@@ -17,6 +17,8 @@ export const createProject = async (data: any) => {
 
     return result;
   } catch (error) {
+    console.log(error);
+    
     return { error };
   }
 };

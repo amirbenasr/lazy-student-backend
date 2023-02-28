@@ -50,11 +50,10 @@ model Proposal {
 
 model Project {
   id          Int        @id @default(autoincrement())
-  name        String
+  title       String
   description String
   pages       Int        @default(1)
-  minPrice    Int
-  maxPrice    Int
+  budget      Int
   type        Type
   technology  Technology
   creatorId   String
